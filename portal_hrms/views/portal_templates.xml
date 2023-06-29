@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_home_leaves" name="Show Leaves" customize_show="True" inherit_id="portal.portal_my_home" priority="100">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-if="request.env.user.employee_id">
+                <t t-call="portal.portal_docs_entry">
+                    <t t-set="title">Leaves</t>
+                    <t t-set="url" t-value="'/my/leaves'" />
+                    <t t-set="placeholder_count" t-value="'leave_count'"/>
+                </t>
+            </t>
+        </xpath>
+    </template>
+    <template id="portal_my_home_menu_leave" inherit_id="portal.portal_breadcrumbs" priority="30">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name in ['leave', 'create_leave']" t-attf-class="breadcrumb-item #{'active' if not leave else ''}">
+                <a t-if="page_name == 'create_leave'" t-attf-href="/my/leaves?{{ keep_query() }}">Leaves</a>
+                <t t-else="">Leaves</t>
+            </li>
+        </xpath>
+    </template>
+    <template id="portal_searchbar_inh" inherit_id="portal.portal_searchbar">
+        <xpath expr="//nav" position="inside">
+            <a class="btn btn-secondary my-2 mx-1" t-if="page_name == 'leave'"  href="/create/leave">Leave Request</a>
+        </xpath>
+    </template>
+    <template id="portal_my_leave_list">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True" />
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Leaves</t>
+            </t>
+            <t t-if="not grouped_leaves">
+                <p>There are currently no Leaves in your account.</p>
+            </t>
+            <div class="mx-1 mb-2 d-flex justify-content-center bg-white">
+                <t t-foreach="allocations" t-as="allocation_key">
+                    <div class="flex-fill border text-center">
+                        <div><b><t t-out="allocation_key" /></b></div>
+                        <div><t t-out="allocations[allocation_key][0]" /></div>
+                        <div><t t-out="allocations[allocation_key][1]" /> Available</div>
+                    </div>
+                </t> 
+            </div>
+            <t t-if="grouped_leaves">
+                <t t-call="portal.portal_table">
+                    <t t-foreach="grouped_leaves" t-as="leaves">
+                        <thead>
+                            <tr t-attf-class="{{'thead-light' if not groupby == 'none' else ''}}">
+                                <th>
+                                    <span class='d-none d-md-inline'>Employee Name</span>
+                                </th>
+                                <th class="text-right">Leave From</th>
+                                <th class="text-right">Leave To</th>
+                                <th class="text-right">Leave Type</th>
+                                <th class="text-right">Leave Status</th>
+                                <th class="text-right">Reason</th>
+                                <th/>
+                            </tr>
+                        </thead>
+                        <t t-foreach="leaves" t-as="leave">
+                            <tr id="leave_row">
+                                <td>
+                                    <t t-esc="leave.employee_id.name" />
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="leave.date_from" t-options="{'widget': 'date'}" />
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="leave.date_to" t-options="{'widget': 'date'}" />
+                                </td>
+                                <td class="text-right"><span t-field="leave.holiday_status_id.name" /></td>
+                                <td class="text-right">
+                                    <span t-if="leave.state == 'draft'" t-attf-class="bg-info rounded-pill py-1 px-3" t-field="leave.state" />
+                                    <span t-if="leave.state == 'confirm'" t-attf-class="bg-warning rounded-pill py-1 px-3" t-field="leave.state" />
+                                    <span t-if="leave.state == 'refuse'" t-attf-class="bg-danger rounded-pill py-1 px-3" t-field="leave.state" />
+                                    <span t-if="leave.state == 'validate1'" t-attf-class="bg-primary rounded-pill py-1 px-3" t-field="leave.state" />
+                                    <span t-if="leave.state == 'validate'" t-attf-class="bg-success rounded-pill py-1 px-3" t-field="leave.state" />
+                                </td>
+                                <td class="text-right"><span t-field="leave.name" /></td>
+                                <td>
+                                    <i  t-if="leave.state in ['draft', 'confirm']" class="fa fa-trash text-danger" type="button" t-att-id="leave.id"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+    <template id="portal_apply_leave">
+        <t t-call="portal.portal_layout">
+            <form action="/save/leave" method="post">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                <input type="hidden" name="employee" t-att-value="employee.id" />
+                <t t-set="breadcrumbs_searchbar" t-value="True" />
+                <t t-call="portal.portal_searchbar">
+                    <t t-set="title">Leaves</t>
+                </t>
+                <div class="row mt-3 my-2">
+                    <div class="form-group col-xl-3">
+                        <label class="col-form-label" for="emp_name"><b>Your Name:</b></label>
+                    </div>
+                    <div class="form-group col-xl-6">
+                        <input type="text" name="emp_name" class="form-control" t-att-value="employee.name" required='True' readonly='True' />
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <div class="form-group col-xl-3">
+                        <label class="col-form-label" for="leave_type"><b>Leave Type:</b></label>
+                    </div>
+                    <div class="form-group col-xl-6">
+                        <select id="leave_type" name="leave_type" class="form-control" required='True'>
+                            <t t-foreach="leave_types" t-as="type">
+                                <option t-att-value="type.id">
+                                    <span t-esc="type.name" />
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <div class="form-group col-xl-3">
+                        <label class="col-form-label" for="start_date"><b>Leave From:</b></label>
+                    </div>
+                    <div class="form-group col-xl-6">
+                        <input type="date" name="start_date" class="form-control" required="true" t-options='{"widget": "date"}' />
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <div class="form-group col-xl-3">
+                        <label class="col-form-label" for="end_date"><b>Leave To:</b></label>
+                    </div>
+                    <div class="form-group col-xl-6">
+                        <input type="date" name="end_date" class="form-control" required="true" t-options='{"widget": "date"}' />
+                    </div>
+                </div>
+                <div class="row my-2">
+                    <div class="form-group col-xl-3">
+                        <label class="col-form-label" for="end_date"><b>Reason:</b></label>
+                    </div>
+                    <div class="form-group col-xl-6">
+                        <textarea name="reason" class="form-control" required="true" rows="3" cols="50" />
+                        </div>
+                </div>
+                <div class="row my-2" t-if="error">
+                    <div class="col-xl-6 offset-xl-3 bg-danger text-center">
+                        <div class="py-2"><b ><t t-out="error" /></b></div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col text-center">
+                        <button class="btn btn-primary mx-2" type="submit">Submit</button>
+                        <a class="btn btn-danger mx-2" href="/my/leaves" >Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </t>
+    </template>
+</odoo>

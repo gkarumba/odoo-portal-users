@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <template id="portal_width" inherit_id="portal.portal_layout">-->
+       <xpath expr="//div[hasclass('row')]/div[@t-attf-class='col-12 col-md col-lg-6']" position="attributes">
+           <attribute name="t-attf-class">col-12 col-md-12 col-lg-9</attribute>
+       </xpath>
+       <xpath expr="//div[@id='o_my_sidebar']" position="attributes">
+           <attribute name="class">col-lg-3 o_my_sidebar</attribute>
+       </xpath>
+   </template>
+   <template id="portal_blocks" inherit_id="portal.portal_my_home">
+       <xpath expr="//div[hasclass('o_portal_docs')]" position="attributes">
+           <attribute name="class">o_portal_docs list-group ow_portal</attribute>
+       </xpath>
+   </template>
+    <template id="inherit_portal_layout" inherit_id="portal.portal_layout" name="Custom Portal Layout">
+           <xpath expr="//div[@id='wrap']" position="attributes">
+           <attribute name="class">portal-homepage</attribute>
+       </xpath>
+        </template>
+    <template id="attendance_list_view">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">List View</t>
+            </t>
+            <t t-call="portal.portal_table">
+                <thead>
+                    <tr class="thead-light">
+                        <th class="text-center">Employee</th>
+                        <th class="text-center">Check In</th>
+                        <th class="text-center">Check Out</th>
+                        <th class="text-center">Work Hours</th>
+                    </tr>
+                </thead>
+                <t t-foreach="key" t-as="list_data">
+                    <tr>
+                        <td class="text-center">
+                            <t t-esc="list_data.get('employee_name')"></t>
+                        </td>
+                        <td class="text-center">
+                            <t t-esc="list_data.get('check_in')"></t>
+                        </td>
+                        <td class="text-center">
+                            <t t-esc="list_data.get('check_out')"></t>
+                        </td>
+                        <td class="text-center">
+                            <t t-esc="list_data.get('worked_hours')"
+                               t-options="{'widget': 'float_time'}"></t>
+                        </td>
+                    </tr>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="attendance_home">
+        <t t-call="portal.portal_layout">
+            <div class="omni_hr_attendance_kiosk_mode_container o_home_menu_background" id="main_page">
+
+                <span class="o_hr_attendance_kiosk_backdrop"/>
+                <div class="o_hr_attendance_clock text-center"/>
+                <t t-if="omni_employee_id">
+                    <div class="omni_hr_attendance_kiosk_mode">
+                        <div class="omni_hr_attendance_user_badge o_home_menu_background">
+                            <img t-attf-src="{{image_data_uri(image_1920) if image_1920 else ''}}"
+                                 class="img rounded-circle" alt="" loading="lazy"
+                                 data-mimetype="image/jpeg"/>
+                        </div>
+                        <h1 class="mb8 omni_employee_name">
+                            <t t-esc="omni_employee_id"/>
+                        </h1>
+                        <h3 class="mt0 mb0 text-muted text_low">Current Status:
+                            <t t-if="check_out or not_check_in">
+                                <p class="d-inline p-2 text-danger">Checked Out</p>
+                            </t>
+                            <t t-else="">
+                                <p class="d-inline p-2 text-success">Checked In</p>
+                            </t>
+                        </h3>
+                        <h3 class="mt8 mb24 omni_attendance_message">
+                            <t t-if="check_out or not_check_in">Welcome!</t>
+                            <t t-else="">Want to check out?</t>
+                        </h3>
+                        <h4 class="text-muted text_low">
+                            <t t-if="check_out or not_check_in">Today's work hours:
+                                <span t-esc="worked_hours" t-options="{'widget': 'float_time'}"/>
+                            </t>
+                            <t t-else="">Check In Time:
+                                <span t-esc="check_in_time" t-options="{'widget': 'datetime'}"/>
+                            </t>
+                        </h4>
+                        <t t-if="check_out or not_check_in">
+                            <a class="fa fa-7x omni_hr_attendance_sign_in_out_icon fa-sign-in btn-secondary"
+                               aria-label="Sign in" title="Sign in"/>
+                        </t>
+                        <t t-else="">
+                            <a class="fa fa-7x omni_hr_attendance_sign_in_out_icon fa-sign-out btn-warning"
+                               aria-label="Sign out" title="Sign out"/>
+                        </t>
+                        <h3 class="mt0 mb0 text-muted text_low">Click to
+                            <t t-if="check_out or not_check_in">
+                                <b>check in</b>
+                            </t>
+                            <t t-else="">
+                                <b>check out</b>
+                            </t>
+                        </h3>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

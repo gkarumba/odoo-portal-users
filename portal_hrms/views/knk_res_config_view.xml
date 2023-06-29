@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_employee_form_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="create_emp_user" string="Create Portal User" type="object" groups="hr.group_hr_manager" attrs="{'invisible': [('user_id', '!=', False)]}" confirm="Are you sure? Portal user will be created and link with this employee" />
+            </xpath>
+        </field>
+    </record>
+</odoo>

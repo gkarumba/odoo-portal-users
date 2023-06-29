@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_employee_portal_user,hr.employee.portal,model_hr_employee,base.group_portal,1,0,0,0
+access_resource_calendar_attendance,hr.resource.calendar.attendance,resource.model_resource_calendar_attendance,base.group_portal,1,1,1,0
+access_resource_calendar,hr.resource.calendar,resource.model_resource_calendar,base.group_portal,1,1,1,0
+access_resource_calendar_leaves,hr.resource.calendar.leaves,resource.model_resource_calendar_leaves,base.group_portal,1,1,1,0
+access_resource_resource,hr.resource.resource,resource.model_resource_resource,base.group_portal,1,1,1,0
+
+access_hr_holidays_portal_employee_request,hr.holidays.portal.employee.request,hr_holidays.model_hr_leave,base.group_portal,1,1,1,1
+access_hr_holidays_portal_employee_allocation,hr.holidays.portal.employee.allocation,hr_holidays.model_hr_leave_allocation,base.group_portal,1,1,1,1
+access_hr_holidays_status_portal_employee,hr.holidays.status employee,hr_holidays.model_hr_leave_type,base.group_portal,1,0,0,0
+access_hr_leave_stress_day_portal_employee,hr.leave.stress.day.portal,hr_holidays.model_hr_leave_stress_day,base.group_portal,1,0,0,0
+access_mail_activity_type_portal_employee,mail.activity.type.portal.employee,mail.model_mail_activity_type,base.group_portal,1,0,0,0
+access_calendar_event_portal_employee,calendar.event.portal.employee,calendar.model_calendar_event,base.group_portal,1,0,1,0
+access_calendar_attendee_portal,calendar.attendee_portal,calendar.model_calendar_attendee,base.group_portal,1,0,1,0
+access_mail_activity_portal_employee,mail.activity.portal.employee,mail.model_mail_activity,base.group_portal,1,0,0,0

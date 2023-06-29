@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_attendance_entry" name="My Portal Attendance Docs Entry">
+        <a t-att-href="url" t-att-title="title"
+           groups="base.group_user,base.group_portal"
+           class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
+            <t t-esc="title"/>
+            <t t-if='list_btn'>
+                <button class="fa fa-list btn-secondary list_view_js ml-auto" title="List View"/>
+            </t>
+            <t t-if='omni_check_out'>
+                <button class="fa fa-sign-in  btn-secondary o_hr_attendance_sign_in_out_icon ml-1" title="Check In"/>
+            </t>
+            <t t-else="">
+                <button class="fa fa-sign-out front_sign_out  o_hr_attendance_sign_in_out_icon btn-secondary ml-1"
+                        title="Check Out"/>
+            </t>
+        </a>
+    </template>
+
+    <template id="attendance_menu" name="Show Attendance" inherit_id="portal.portal_my_home">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal_hrms.portal_attendance_entry" t-if="omni_employee_id">
+                <t t-set="title">Attendance</t>
+                <t t-set="url" t-value="'/omni/my/attendance'"/>
+                <t t-set="check_in_btn" t-value="check_out"/>
+                <t t-set="list_btn" t-value="True"/>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_my_home_menu_attendance" name="Portal layout : Attendance"
+              inherit_id="portal.portal_breadcrumbs" priority="20">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'attendance'" t-attf-class="breadcrumb-item #{'active' if not attendance else ''}">
+                <t>Attendance</t>
+            </li>
+            <li t-else="" t-attf-class="breadcrumb-item">
+                <t>List View</t>
+            </li>
+        </xpath>
+    </template>
+
+
+</odoo>
+
